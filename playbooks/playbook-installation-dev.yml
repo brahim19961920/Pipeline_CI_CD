@@ -1,0 +1,31 @@
+--- 
+- name: installer git, Maven, nano et Java sur la machine dev
+  hosts: dev
+  become: yes
+  tasks: 
+  - name: mise à jour de apt
+    apt:
+      update_cache: yes
+
+  - name: installer git
+    apt:
+      name: git
+      state: latest
+  
+  - name: installer maven
+    apt:
+      name: maven
+      state: latest
+
+
+  - name: installer java
+    apt:
+      name: default-jre
+      state: latest
+
+
+  - name: installer nano
+    apt:
+      name: nano
+      state: latest
+   
