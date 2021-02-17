@@ -1,0 +1,37 @@
+--- 
+- name: installer jenkins, sonarqube
+  hosts: jenkins
+  become: yes
+  tasks: 
+  - name: mise à jour de apt
+    apt:
+      update_cache: yes
+
+  - name: installer java
+    apt:
+      name: default-jre
+      state: present
+
+  - name: ajout d'une clé apt
+    apt_key:
+      url: https://pkg.jenkins.io/debian-stable/jenkins.io.key
+      state: present
+  
+  - name: ajout du repository apt
+    apt_repository: 
+      repo: deb https://pkg.jenkins.io/debian-stable binary/
+      state: present
+  
+  - name: mise à jour de apt
+    apt:
+      update_cache: yes
+   
+  - name: installer jenkins
+    apt:
+      name: jenkins
+      state: present
+     
+  - name: activer jenkins
+    service:
+      name: jenkins
+      state: started 
