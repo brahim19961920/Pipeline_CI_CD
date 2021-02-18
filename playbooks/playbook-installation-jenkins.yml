@@ -1,5 +1,5 @@
 --- 
-- name: installer jenkins, sonarqube
+- name: installer jenkins, sonarqube et artifactory
   hosts: CI
   become: yes
   tasks: 
