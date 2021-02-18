@@ -1,16 +1,22 @@
 --- 
-- name: installer jenkins, sonarqube et artifactory
+- name: installer jenkins, sonarqube
   hosts: CI
   become: yes
   tasks: 
-  - name: mise à jour de apt
+
+  - name: installer  maven, git, java, unzip
     apt:
       update_cache: yes
-
-  - name: installer java
-    apt:
-      name: default-jre 
-      state: latest
+      name: "{{ item }}"
+    loop:
+    - maven
+    - git
+    - default-jre
+    - unzip
+ 
+  - name: modification du JAVA_HOME
+    shell:
+      cmd: " echo export JAVA_HOME=/usr/lib/jvm/java-1.8.0-openjdk-amd64>>/home/vagrant/.bashrc ; echo PATH=$PATH:$JAVA_HOME>>/home/vagrant/.bashrc"
 
   - name: ajout d'une clé apt jenkins
     apt_key:
@@ -22,36 +28,15 @@
       repo: deb https://pkg.jenkins.io/debian-stable binary/
       state: present
   
-  - name: mise à jour de apt
+  - name: installer jenkins 
     apt:
       update_cache: yes
-
-  - name: modification du JAVA_HOME
-    shell:
-      cmd: " echo export JAVA_HOME=/usr/lib/jvm/java-1.8.0-openjdk-amd64>>/home/vagrant/.bashrc ; echo PATH=$PATH:$JAVA_HOME>>/home/vagrant/.bashrc"
-   
-  - name: installer jenkins
-    apt:
       name: jenkins
-      state: present
      
   - name: activer jenkins
     service:
       name: jenkins
       state: started
-
-  - name: mise à jour de apt
-    apt:
-      update_cache: yes
-
-  - name: installer unzip
-    apt:
-      name: unzip
-      state: present
-
-  - name: mise à jour de apt
-    apt:
-      update_cache: yes
 
   - name: ajout d'une clé apt artifactory
     apt_key:
@@ -62,21 +47,17 @@
     apt_repository: 
       repo: deb https://jfrog.bintray.com/artifactory-debs bionic main
       state: present
-  
-  - name: mise à jour de apt
-    apt:
-      update_cache: yes
 
   - name: installer artifactory
     apt:
+      update_cache: yes
       name: jfrog-artifactory-oss
-      state: present
 
   - name: activer artifactory
     service:
       name: artifactory
       state: started
-
+ 
   roles:
   - geerlingguy.sonar 
  

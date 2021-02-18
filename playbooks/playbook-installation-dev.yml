@@ -6,28 +6,14 @@
   - name: mise à jour de apt
     apt:
       update_cache: yes
-
-  - name: installer git
-    apt:
-      name: git
-      state: latest
+      name: "{{ item }}"
+    loop:
+    - nano
+    - default-jre
+    - git
+    - maven
   
-  - name: installer maven
-    apt:
-      name: maven
-      state: latest
-
-
-  - name: installer java
-    apt:
-      name: default-jre
-      state: latest
-
   - name: modification du JAVA_HOME
     shell:
       cmd: " echo export JAVA_HOME=/usr/lib/jvm/java-1.8.0-openjdk-amd64>>/home/vagrant/.bashrc ; echo PATH=$PATH:$JAVA_HOME>>/home/vagrant/.bashrc"
-  - name: installer nano
-    apt:
-      name: nano
-      state: latest
    
