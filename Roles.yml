@@ -1,0 +1,3 @@
+# exécuter ce script en tant que root
+ansible-galaxy install geerlingguy.sonar
+
