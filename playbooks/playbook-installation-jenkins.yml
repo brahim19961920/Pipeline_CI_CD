@@ -1,5 +1,5 @@
 --- 
-- name: installer jenkins, sonarqube
+- name: installer jenkins, sonarqube et artifactory
   hosts: CI
   become: yes
   tasks: 
@@ -9,8 +9,7 @@
 
   - name: installer java
     apt:
-      name: default-jre
- 
+      name: default-jre 
       state: latest
 
   - name: ajout d'une clé apt jenkins
@@ -40,9 +39,11 @@
     service:
       name: jenkins
       state: started
+
   - name: mise à jour de apt
     apt:
       update_cache: yes
+
   - name: installer unzip
     apt:
       name: unzip
@@ -51,7 +52,6 @@
   - name: mise à jour de apt
     apt:
       update_cache: yes
-
 
   - name: ajout d'une clé apt artifactory
     apt_key:
@@ -76,7 +76,6 @@
     service:
       name: artifactory
       state: started
- 
 
   roles:
   - geerlingguy.sonar 
