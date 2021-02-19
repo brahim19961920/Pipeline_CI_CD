@@ -51,4 +51,5 @@ Vagrant.configure("2") do |configuration|
 		vb.memory = "4000"
 	end
     config.vm.provision "shell", inline: $script_inject_pk
+    end
 end
