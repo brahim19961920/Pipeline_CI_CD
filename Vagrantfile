@@ -11,7 +11,7 @@ Vagrant.configure("2") do |configuration|
 
   configuration.vm.define "MachineAnsible" do |config|
     
-    config.vm.box = "ubuntu/xenial64"
+    config.vm.box = "generic/ubuntu1804"
     config.vm.hostname = "machineAnsible"
     config.vm.network :private_network, ip: "192.168.33.10"
     config.vm.provider "virtualbox" do |vb|
@@ -21,7 +21,8 @@ Vagrant.configure("2") do |configuration|
     end
 
   configuration.vm.define "MachineDev" do |config|
-    config.vm.box = "ubuntu/xenial64"
+
+    config.vm.box = "generic/ubuntu1804"
     config.vm.hostname = "machineDeveloppement"
     config.vm.network :private_network, ip: "192.168.33.20"
     config.vm.provider "virtualbox" do |vb|
@@ -31,13 +32,23 @@ Vagrant.configure("2") do |configuration|
     end
 
   configuration.vm.define "MachineJenkins" do |config|
-    config.vm.box = "ubuntu/xenial64"
+    
+    config.vm.box = "generic/ubuntu1804"
     config.vm.hostname = "machineJenkins"
-    config.vm.network :private_network, ip: "192.168.33.50"
+    config.vm.network :private_network, ip: "192.168.33.30"
     config.vm.provider "virtualbox" do |vb|
 		vb.memory = "6000"
 	end
     config.vm.provision "shell", inline: $script_inject_pk
     end
 
+  configuration.vm.define "MachineTomcat" do |config|
+    
+    config.vm.box = "generic/ubuntu1804"
+    config.vm.hostname = "machineJenkins"
+    config.vm.network :private_network, ip: "192.168.33.40"
+    config.vm.provider "virtualbox" do |vb|
+		vb.memory = "4000"
+	end
+    config.vm.provision "shell", inline: $script_inject_pk
 end
