@@ -1,0 +1,38 @@
+---
+- name: installer java et maven 
+  hosts: all
+  become: yes
+  tasks:
+    - name: installer maven et java
+      apt:
+        update_cache: yes
+        name: "{{ item }}"
+      loop:
+      - default-jre
+      - maven
+
+    - name: télecharger apache maven
+      get_url:
+        url: https://www-us.apache.org/dist/maven/maven-3/3.6.3/binaries/apache-maven-3.6.3-bin.tar.gz
+        dest: /opt
+    - name: unarchiver /opt/apache-maven-3.6.3-bin.tar.gz
+      unarchive:  
+        remote_src: yes  
+        src: /opt/apache-maven-3.6.3-bin.tar.gz
+        dest: /opt/
+    - name: supprimer /opt/apache-maven-3.6.3-bin.tar.gz
+      file:
+        path: /opt/apache-maven-3.6.3-bin.tar.gz
+        state: absent 
+    - name: création du fichier /etc/profile.d/maven.sh
+      file:
+        mode: "0755"
+        state: touch
+        path: /etc/profile.d/maven.sh
+
+    - name: ajout de JAVA_HOME et MAVEN_HOME
+      shell: 
+        cmd: 'echo export JAVA_HOME=/usr/lib/jvm/default-java > /etc/profile.d/maven.sh ; echo export M2_HOME=/opt/apache-maven-3.6.3  >> /etc/profile.d/maven.sh ; echo export MAVEN_HOME=/opt/apache-maven-3.6.3   >>/etc/profile.d/maven.sh ;      echo export PATH=${M2_HOME}/bin:${PATH} >>/etc/profile.d/maven.sh'
+
+
+ 
