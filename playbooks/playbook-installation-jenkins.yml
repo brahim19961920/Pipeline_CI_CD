@@ -1,5 +1,5 @@
 --- 
-- name: installer jenkins, sonarqube
+- name: installer jenkins, artifactory
   hosts: CI
   become: yes
   tasks: 
@@ -9,7 +9,7 @@
       update_cache: yes
       name: "{{ item }}"
     loop:
-    - maven
+    #- maven
     - git
     - default-jre
     - unzip
@@ -58,6 +58,4 @@
       name: artifactory
       state: started
  
-  roles:
-  - geerlingguy.sonar 
  
