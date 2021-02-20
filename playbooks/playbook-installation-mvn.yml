@@ -1,6 +1,8 @@
 ---
 - name: installer java et maven 
-  hosts: all
+  hosts:
+  - dev
+  - jenkins
   become: yes
   tasks:
     - name: installer maven et java
@@ -32,7 +34,7 @@
 
     - name: ajout de JAVA_HOME et MAVEN_HOME
       shell: 
-        cmd: 'echo export JAVA_HOME=/usr/lib/jvm/default-java > /etc/profile.d/maven.sh ; echo export M2_HOME=/opt/apache-maven-3.6.3  >> /etc/profile.d/maven.sh ; echo export MAVEN_HOME=/opt/apache-maven-3.6.3   >>/etc/profile.d/maven.sh ;      echo export PATH=${M2_HOME}/bin:${PATH} >>/etc/profile.d/maven.sh'
+        cmd: 'echo export JAVA_HOME=/usr/lib/jvm/default-java> /etc/profile.d/maven.sh ; echo export M2_HOME=/opt/apache-maven-3.6.3  >> /etc/profile.d/maven.sh ; echo export MAVEN_HOME=/opt/apache-maven-3.6.3   >>/etc/profile.d/maven.sh ;      echo export PATH=${M2_HOME}/bin:${PATH} >>/etc/profile.d/maven.sh'
 
 
  

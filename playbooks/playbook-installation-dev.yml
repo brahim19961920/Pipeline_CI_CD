@@ -1,5 +1,5 @@
 --- 
-- name: installer git, Maven, nano et Java sur la machine dev
+- name: installer git et  nano  sur la machine dev
   hosts: dev
   become: yes
   tasks: 
@@ -9,11 +9,4 @@
       name: "{{ item }}"
     loop:
     - nano
-    - default-jre
     - git
-    - maven
-  
-  - name: modification du JAVA_HOME
-    shell:
-      cmd: " echo export JAVA_HOME=/usr/lib/jvm/java-1.8.0-openjdk-amd64>>/home/vagrant/.bashrc ; echo PATH=$PATH:$JAVA_HOME>>/home/vagrant/.bashrc"
-   
