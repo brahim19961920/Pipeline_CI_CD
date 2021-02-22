@@ -52,4 +52,34 @@ Vagrant.configure("2") do |configuration|
 	end
     config.vm.provision "shell", inline: $script_inject_pk
     end
+
+
+
+  configuration.vm.define "MachinePreProd" do |config|
+
+    config.vm.box = "ubuntu/bionic64"
+    config.vm.hostname = "machinePreProd"
+    config.vm.network :private_network, ip: "192.168.33.50"
+    config.vm.provider "virtualbox" do |vb|
+                vb.memory = "2048"
+        end
+    config.vm.provision "shell", inline: $script_inject_pk
+    end
+
+  configuration.vm.define "MachineMonitoring" do |config|
+
+    config.vm.box = "ubuntu/bionic64"
+    config.vm.hostname = "machineMonitoring"
+    config.vm.network :private_network, ip: "192.168.33.60"
+    config.vm.provider "virtualbox" do |vb|
+                vb.memory = "6000"
+        end
+    config.vm.provision "shell", inline: $script_inject_pk
+    end
+
+
+
+
+
+
 end
