@@ -1,0 +1,14 @@
+# ce script est lancé aprés la construction du projet
+#les commandes suivantes sont ajoutées à la partie Post Steps dans le job Jenkins
+# A partir du Dockerfile existant dans ce meme repertoire une image basée sur tomcat8 et contenat appwb.war 
+# l'image est ensuité envoyée à DockerHub
+#un contenneur sera lancé à partir de cette image
+
+#REMARQUE POUR POUVOIR SE CONNECTER A DOCKERHUB DEPUIS LE TEMRINAL EN UTILISIANT LA COMMANDE docker login -u -p il faut que les permisions du fichier  /var/run/docker.sock soient 777
+
+ssh brahim@prod mkdir -p deploy 
+cd /var/lib/jenkins/workspace/AppWebCi_CD/webapp/target
+scp Dockerfile webapp.war brahim@prod:~/deploy/
+ssh brahim@prod " docker login -u 'brahim1996' -p 'mdp ' && docker build -t brahim1996/app_tomcat8:1  deploy/ && docker push brahim1996/app_tomcat8:1" 
+ssh brahim@prod "docker rm -f appliWeb"
+ssh brahim@prod " docker run -it -p 80:8080 -d --name appliWeb brahim1996/app_tomcat8:1"
