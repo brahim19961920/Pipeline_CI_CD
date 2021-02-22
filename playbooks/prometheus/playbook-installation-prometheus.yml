@@ -1,0 +1,113 @@
+---
+ - name: installer prometheus sur une machine ubuntu 18.04
+   hosts: monitoring
+   become: yes
+   tasks:
+   - name: création d'un utilisateur prometheus
+     user:
+       name: prometheus
+       shell: /bin/false
+       system: yes
+       create_home: no
+   - name: création du répertoire /etc/prometheus
+     file:
+       path: /etc/prometheus/
+       owner: prometheus
+       state: directory
+
+   - name: création du répertoire /var/lib/prometheus 
+     file:
+       path: /var/lib/prometheus
+       owner: prometheus
+       state: directory
+     
+   - name: télechager le binaire de prometheus
+    
+     get_url:
+       url: https://github.com/prometheus/prometheus/releases/download/v2.10.0/prometheus-2.10.0.linux-amd64.tar.gz
+       dest: /usr/local/bin
+   
+   - name: extraire le binaire
+     unarchive:
+       remote_src: yes
+       src: /usr/local/bin/prometheus-2.10.0.linux-amd64.tar.gz
+       dest: /usr/local/bin/
+   
+   - name: supprimer le binaire
+     file:
+       path: /usr/local/bin/prometheus-2.10.0.linux-amd64.tar.gz
+ 
+       state: absent
+
+   - name: copier /usr/local/bin/prometheus-2.10.0.linux-amd64/prometheus dans /usr/local/bin
+     copy:
+       remote_src: yes
+       src: /usr/local/bin/prometheus-2.10.0.linux-amd64/prometheus
+       dest: /usr/local/bin/
+   
+   - name: copier /usr/local/bin/prometheus-2.10.0.linux-amd64/prometool dans /usr/local/bin
+     copy:
+       remote_src: yes
+       src: /usr/local/bin/prometheus-2.10.0.linux-amd64/promtool
+       dest: /usr/local/bin/
+
+       
+   - name: changer le proprietaire de /usr/local/bin/promtool
+     file:
+       path: /usr/local/bin/promtool
+       owner: prometheus
+       group: prometheus
+       mode: "0755" 
+   
+   - name: changer le proprietaire de /usr/local/bin/prometheus
+     file:
+       path: /usr/local/bin/prometheus
+       owner: prometheus
+       group: prometheus
+       mode: "0755"
+
+
+   - name: copier le repertoire /usr/local/bin/prometheus-2.10.0.linux-amd64/consoles dans /etc/prometheus
+     copy:
+       remote_src: yes
+       src: /usr/local/bin/prometheus-2.10.0.linux-amd64/consoles
+       dest: /etc/prometheus
+
+   - name: copier le repertoire /usr/local/bin/prometheus-2.10.0.linux-amd64/console_libraries dans /etc/prometheus
+     copy:
+       remote_src: yes
+       src: /usr/local/bin/prometheus-2.10.0.linux-amd64/console_libraries
+       dest: /etc/prometheus
+
+   - name: copier /usr/local/bin/prometheus-2.10.0.linux-amd64/prometheus.yml dans /etc/prometheus/
+     copy:   
+       remote_src: yes
+       src: /usr/local/bin/prometheus-2.10.0.linux-amd64/prometheus.yml
+       dest: /etc/prometheus
+   - name: changer le proprietaire du repertoire  /etc/prometheus
+     file:
+       path: /etc/prometheus/
+       owner: prometheus
+       group: prometheus
+
+   - name: changer le proprietaire du repertoire  /var/lib/prometheus
+     file:
+       path: /var/lib/prometheus
+       owner: prometheus
+       group: prometheus
+
+   - name: modification du fichier /etc/systemd/system/prometheus.service
+     template:
+       src: prometheus.service.j2
+       dest: /etc/systemd/system/prometheus.service
+
+   - name: relaod systemd daemon
+     systemd:
+       daemon_reload: yes
+
+   - name: start prometheus service
+     service:
+       name: prometheus
+       state: restarted
+       enabled: yes
+
