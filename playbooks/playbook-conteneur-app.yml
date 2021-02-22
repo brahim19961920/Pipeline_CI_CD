@@ -1,0 +1,20 @@
+---
+- name: lancer un conteneur à partir de l'image brahim1996/app_web_tomcat sur une machine ubuntu
+  hosts: preprod
+  become: yes
+  tasks:
+  - name:
+    apt:
+      update_cache: yes
+      name: python3-pip
+  - name: installer le module Docker pour Python
+    pip:
+      name: Docker
+  - name: creer et lancer le conteneur
+    docker_container:
+      name: conteneur_app
+      image: brahim1996/app_web_tomcat
+      state: started
+      ports: "80:8080"
+
+#pour executer l application dans un navigateur web, utilisez http://@ip/webapp/
