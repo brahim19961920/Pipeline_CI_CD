@@ -1,8 +1,9 @@
 ---
 - name: installer java et maven 
   hosts:
-  - dev
-  - jenkins
+  - preprod
+  
+  
   become: yes
   tasks:
     - name: installer maven et java
