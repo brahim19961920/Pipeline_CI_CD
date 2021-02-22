@@ -1,7 +1,7 @@
 --- 
 - name: installer Docker sur une machine ubuntu
   become: yes
-  hosts: jenkins
+  hosts: prod 
   tasks:
   - name: installer quelques paquets utiles
     apt:
@@ -27,8 +27,9 @@
       name: docker-ce
   - name: ajout de l'utilisateur vagrant au groupe docker
     user:
-      name: vagrant
-      group: "{{ item }}"
-    loop:
-      - vagrant
-      - docker   
+      name: brahim
+      group: docker  
+  - name: changer les permissions du fichier /var/run/docker.sock pour pouvoir se connecter avec la commande docker login -u - p
+    file:
+      path: /var/run/docker.sock
+      mode: '777'   
