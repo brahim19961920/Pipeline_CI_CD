@@ -1,0 +1,13 @@
+--- 
+- name: configurer prometheus pour ajouter un job node_exporter
+
+
+  - name: modification du fichier /etc/prometheus/prometheus.yml
+    copy:
+      src: prometheus.yml
+      dest: /etc/prometheus/prometheus.yml
+  - name: redemmarer le service prometheus
+    service:
+      state: restarted
+      name: prometheus
+
