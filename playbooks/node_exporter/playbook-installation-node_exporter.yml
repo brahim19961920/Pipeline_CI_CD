@@ -52,10 +52,18 @@
     systemd:
       daemon_reload: yes
 
-  - name: start prometheus service
+  - name: start node_exporter service
     service:
       name: node_exporter
-      state: started
+      state: restarted
       enabled: yes
 
+  - name: ajout du node_exporter au fichier /etc/prometheus/prometheus.yml
+    copy:
+      src: prometheus.yml
+      dest: /etc/prometheus/prometheus.yml
+  - name: redemmarer le service prometheus
+    service:
+      state: restarted
+      name: prometheus
 
