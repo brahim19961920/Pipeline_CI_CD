@@ -1,0 +1,61 @@
+---
+- name: installer node_exporter sur une machine ubuntu 18.04
+  hosts: 
+  - monitoring
+  become: yes
+  tasks:
+
+  - name: télecharger le binaire de node_exporter
+    get_url:
+      url: https://github.com/prometheus/node_exporter/releases/download/v1.1.0/node_exporter-1.1.0.linux-amd64.tar.gz
+
+      dest: /usr/local/bin
+  
+  - name: extraire le binaire dans le meme repertoire
+    unarchive:
+     remote_src: yes
+     src: /usr/local/bin/node_exporter-1.1.0.linux-amd64.tar.gz
+     dest: /usr/local/bin/
+  
+  - name: supprimer le binaire
+    file:
+      path: /usr/local/bin/node_exporter-1.1.0.linux-amd64.tar.gz
+      state: absent
+
+  - name: creer un utilisateur node_exporter
+    user:
+      name: node_exporter
+      system: yes
+      create_home: no
+      shell: /bin/false
+
+
+  - name: copier  /usr/local/bin/node_exporter-1.1.0.linux-amd64/node_exporter dans /usr/local/bin
+    copy:
+      remote_src: yes
+      src:  /usr/local/bin/node_exporter-1.1.0.linux-amd64/node_exporter 
+      dest: /usr/local/bin
+
+  - name: changer le proprietaire de /usr/local/bin/node_exporter
+    file:
+      path: /usr/local/bin/node_exporter
+      owner: node_exporter
+      group: node_exporter
+      mode: "0755"
+
+  - name: creer un service node_exporter
+    template:
+      src: node_exporter.service.j2
+      dest: /etc/systemd/system/node_exporter.service
+
+  - name: relaod systemd daemon
+    systemd:
+      daemon_reload: yes
+
+  - name: start prometheus service
+    service:
+      name: node_exporter
+      state: started
+      enabled: yes
+
+
