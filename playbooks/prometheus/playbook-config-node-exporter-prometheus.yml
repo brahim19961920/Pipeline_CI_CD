@@ -1,7 +1,8 @@
 --- 
 - name: configurer prometheus pour ajouter un job node_exporter
-
-
+  hosts: moniroting
+  become: yes
+  tasks:
   - name: modification du fichier /etc/prometheus/prometheus.yml
     copy:
       src: prometheus.yml
