@@ -1,0 +1,51 @@
+--- 
+- name: installer SonarQube sur une machine ubuntu 18.04
+  hosts: 
+  - jenkins
+  become: yes
+  tasks:
+
+  - name: installer java
+    apt:
+      update_cache: yes
+      name: default-jdk
+       
+      #j'utilise le module shell au lieu de apt_reposiroty et apt_key puisque j'ai un probléme avec ces derniers    
+  - name: ajout du repo postgresql et de la clé postgresql aux system
+    shell:
+      cmd: 'echo "deb http://apt.postgresql.org/pub/repos/apt/ `lsb_release -cs`-pgdg main" >> /etc/apt/sources.list.d/pgdg.list && wget -q https://www.postgresql.org/media/keys/ACCC4CF8.asc -O - | sudo apt-key add -'
+
+  - name: installer postgresql et pip pour installer des modules Python
+    apt:
+      update_cache: yes
+      name: "{{ item }}"
+    loop:
+    - python-pip
+    - postgresql
+    - postgresql-contrib  
+
+  - name: installer psycopg2-binary (module Python essentiel pour postgresql)
+    pip:
+      name: psycopg2-binary
+
+  - name: créer une base de donnes sonar , l'utilisation de l'utilsateur postgres est nécessaire 
+    become_user: postgres
+    become: yes
+    postgresql_db: 
+      name: sonar
+
+  - name: creer un utilisateur sonar
+    become_user: postgres
+    become: yes
+    postgresql_user:
+      name: sonar
+      password: 'sonar' 
+  
+  - name: changer le propriétaire de la base de données sonar
+    become_user: postgres
+    become: yes
+    postgresql_owner:
+      db: sonar
+      new_owner: sonar
+      obj_name: sonar
+      obj_type: database    
