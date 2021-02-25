@@ -1,7 +1,7 @@
 --- 
 - name: installer SonarQube sur une machine ubuntu 18.04
   hosts: 
-  - jenkins
+  - localhost
   become: yes
   tasks:
 
@@ -11,6 +11,7 @@
       name: default-jdk
        
       #j'utilise le module shell au lieu de apt_reposiroty et apt_key puisque j'ai un probléme avec ces derniers    
+      # A revoir !!!
   - name: ajout du repo postgresql et de la clé postgresql aux system
     shell:
       cmd: 'echo "deb http://apt.postgresql.org/pub/repos/apt/ `lsb_release -cs`-pgdg main" >> /etc/apt/sources.list.d/pgdg.list && wget -q https://www.postgresql.org/media/keys/ACCC4CF8.asc -O - | sudo apt-key add -'
@@ -20,6 +21,7 @@
       update_cache: yes
       name: "{{ item }}"
     loop:
+    - unzip
     - python-pip
     - postgresql
     - postgresql-contrib  
@@ -28,13 +30,13 @@
     pip:
       name: psycopg2-binary
 
-  - name: créer une base de donnes sonar , l'utilisation de l'utilsateur postgres est nécessaire 
+  - name: créer une base de donnees sonar , l'utilisation de l'utilsateur postgres est nécessaire 
     become_user: postgres
     become: yes
     postgresql_db: 
       name: sonar
 
-  - name: creer un utilisateur sonar
+  - name: creer un utilisateur sonar pour postgresql
     become_user: postgres
     become: yes
     postgresql_user:
@@ -48,4 +50,73 @@
       db: sonar
       new_owner: sonar
       obj_name: sonar
-      obj_type: database    
+      obj_type: database  
+
+  - name: creer un utilisateur sonar  
+    user:
+      name: sonar
+      state: present
+
+  - name: télecharger le binaire de SonarQube
+    get_url:
+      url:  https://binaries.sonarsource.com/Distribution/sonarqube/sonarqube-6.7.6.zip
+      dest: /opt/
+  
+  - name: unarchiver le binaire dans le dossier /opt/sonarqube
+    unarchive:
+      remote_src: yes
+      src: /opt/sonarqube-6.7.6.zip
+      dest: /opt/
+  
+  - name: copier /opt/sonarqube-6.7.6 vers /opt/sonarqube
+    copy:
+      src: /opt/sonarqube-6.7.6/
+      dest: /opt/sonarqube
+      remote_src: yes
+  
+  - name: supprimer le binaire /opt/sonarqube-6.7.6.zip
+    file:
+      path: /opt/sonarqube-6.7.6.zip
+      state: absent    
+  
+  - name: changer le proprietaire du répertoire /opt/sonarqube
+    file:
+      path: /opt/sonarqube
+      group: sonar
+      owner: sonar
+      recurse: yes
+      state: directory
+
+  - name: /opt/sonarqube/conf/sonar.properties
+    template:
+      src: sonar.properties.j2
+      dest: /opt/sonarqube/conf/sonar.properties 
+      owner: sonar
+      group: sonar
+      mode: 0640
+
+  - name: modification du fichier /opt/sonarqube/bin/linux-x86-64/sonar.sh
+    template:
+      src: sonar.sh.j2
+      dest: /opt/sonarqube/bin/linux-x86-64/sonar.sh
+      owner: sonar
+      group: sonar
+      mode: 0751
+  
+  - name: creer un systemd service pour sonar
+    template:
+      src: sonar.service.j2
+      dest: /etc/systemd/system/sonar.service
+      owner: root
+      group: root
+      mode: 0755
+
+    
+  - name: relaod systemd daemon
+    systemd:
+      daemon_reload: yes
+    
+  - name: start sonarqube service
+    service:
+      name: sonar
+      state: restarted
