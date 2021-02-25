@@ -55,7 +55,7 @@
 
     - name: modification du fichier context /opt/tomcat/apache-tomcat-9.0.43/webapps/host-manager/META-INF/context.xml
       template:
-        src: host_manager_context.js
+        src: host_manager_context.j2
         dest: /opt/tomcat/apache-tomcat-9.0.43/webapps/host-manager/META-INF/context.xml
         owner: tomcat
         group: tomcat
@@ -63,7 +63,7 @@
 
     - name: modification du fichier context /opt/tomcat/apache-tomcat-9.0.43/webapps/manager/META-INF/context.xml
       template:
-        src: manager_context.js
+        src: manager_context.j2
         dest: /opt/tomcat/apache-tomcat-9.0.43/webapps/manager/META-INF/context.xml
         owner: tomcat
         group: tomcat
@@ -72,7 +72,7 @@
     - name: modification du fichier /opt/tomcat/apache-tomcat-9.0.43/conf/tomcat-users.xml
 
       template:
-        src: tomcat-users.xml.js
+        src: tomcat-users.xml.j2
         dest: /opt/tomcat/apache-tomcat-9.0.43/conf/tomcat-users.xml
         owner: tomcat
         group: tomcat
