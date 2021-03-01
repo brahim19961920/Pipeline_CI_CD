@@ -1,0 +1,15 @@
+---
+- name: installer mysql, changer le mot de passe de root, creer une base donnes et utilisateur
+  hosts: localhost
+  become: yes
+  tasks:
+  - name: installer mysql
+    apt:
+      update_cache: yes
+      name: mysql-server
+  
+  - name: lancer le service mysql
+    service:
+      name: mysql
+      state: started
+      enabled: yes 
