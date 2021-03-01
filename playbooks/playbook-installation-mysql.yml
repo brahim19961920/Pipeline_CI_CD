@@ -1,7 +1,8 @@
 ---
-- name: installer mysql, changer le mot de passe de root, creer une base donnes et utilisateur
+- name: installer mysql, changer le mot de passe de root, creer une base donnes et utilisateur sur la machine locale
   hosts: localhost
   become: yes
+  vars_files:  vars
   tasks:
 
   - name: installer mysql
@@ -27,3 +28,11 @@
     mysql_db:
       name: base
       state: present
+  
+  - name: creer un utilisateur avec tous les priviliges sur la base de donnes base
+    mysql_user:
+      name: brahim
+      password: "{{ pass }}" 
+      priv: "base.*:ALL"
+      state: present
+
