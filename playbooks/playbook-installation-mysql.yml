@@ -3,13 +3,27 @@
   hosts: localhost
   become: yes
   tasks:
+
   - name: installer mysql
     apt:
       update_cache: yes
-      name: mysql-server
+      name: 
+      - mysql-server
+      - python3-mysqldb 
   
   - name: lancer le service mysql
     service:
       name: mysql
       state: started
       enabled: yes 
+    ignore_errors: yes  
+  
+  - name: changer le mot de passe de root avec le fichier .my.cnf
+    template:
+      src: .my.cnf
+      dest: /root/.my.cnf
+  
+  - name: creer une bd
+    mysql_db:
+      name: base
+      state: present
